@@ -265,6 +265,7 @@ export default function ProtectedPage() {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => toggleTodo(todo.id)}
+                    data-testid={`toggle-${todo.id}`}
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-200 ${
                       todo.completed
                         ? 'bg-green-500 border-green-500 text-white'
@@ -291,6 +292,7 @@ export default function ProtectedPage() {
                       />
                     ) : (
                       <p
+                        data-testid={`todo-text-${todo.id}`}
                         className={`text-lg ${
                           todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
                         }`}
@@ -333,6 +335,7 @@ export default function ProtectedPage() {
 
                     <button
                       onClick={() => deleteTodo(todo.id)}
+                      data-testid={`delete-${todo.id}`}
                       className="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,4 +351,4 @@ export default function ProtectedPage() {
       </div>
     </div>
   )
-}
+} 
