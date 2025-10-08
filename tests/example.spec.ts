@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 test.describe('Todo App Tests', () => {
   test.describe('Login Tests', () => {
     test('should login successfully with valid credentials', async ({ page }) => {
-      await page.goto('http://localhost:3000');
+      await page.goto(BASE_URL);
       
       await page.getByPlaceholder('Enter your username').fill('user');
       await page.getByPlaceholder('Enter your password').fill('password');
@@ -14,7 +16,7 @@ test.describe('Todo App Tests', () => {
     });
 
     test('should show error for invalid credentials', async ({ page }) => {
-      await page.goto('http://localhost:3000');
+      await page.goto(BASE_URL);
       
       await page.getByPlaceholder('Enter your username').fill('wrong');
       await page.getByPlaceholder('Enter your password').fill('wrong');
@@ -26,7 +28,7 @@ test.describe('Todo App Tests', () => {
 
   test.describe('Create Todo Tests', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3000');
+      await page.goto(BASE_URL);
       await page.getByPlaceholder('Enter your username').fill('user');
       await page.getByPlaceholder('Enter your password').fill('password');
       await page.getByRole('button', { name: 'Sign In' }).click();
@@ -61,7 +63,7 @@ test.describe('Todo App Tests', () => {
 
   test.describe('Read Todo Tests', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3000');
+      await page.goto(BASE_URL);
       await page.getByPlaceholder('Enter your username').fill('user');
       await page.getByPlaceholder('Enter your password').fill('password');
       await page.getByRole('button', { name: 'Sign In' }).click();
@@ -90,7 +92,7 @@ test.describe('Todo App Tests', () => {
 
   test.describe('Update Todo Tests', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3000');
+      await page.goto(BASE_URL);
       await page.getByPlaceholder('Enter your username').fill('user');
       await page.getByPlaceholder('Enter your password').fill('password');
       await page.getByRole('button', { name: 'Sign In' }).click();
@@ -120,7 +122,7 @@ test.describe('Todo App Tests', () => {
 
   test.describe('Delete Todo Tests', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3000');
+      await page.goto(BASE_URL);
       await page.getByPlaceholder('Enter your username').fill('user');
       await page.getByPlaceholder('Enter your password').fill('password');
       await page.getByRole('button', { name: 'Sign In' }).click();
@@ -161,7 +163,7 @@ test.describe('Todo App Tests', () => {
 
   test.describe('Toggle Todo Tests', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3000');
+      await page.goto(BASE_URL);
       await page.getByPlaceholder('Enter your username').fill('user');
       await page.getByPlaceholder('Enter your password').fill('password');
       await page.getByRole('button', { name: 'Sign In' }).click();
