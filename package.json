@@ -9,12 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.902.0",
+    "@aws-sdk/lib-dynamodb": "^3.902.0",
     "@types/js-cookie": "^3.0.6",
     "js-cookie": "^3.0.5",
     "next": "^15.5.4",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "uuid": "^13.0.0"
   },
+    "optionalDependencies": {
+      "@next/swc-linux-x64-gnu": "15.5.4"
+    },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
     "@types/node": "^20",

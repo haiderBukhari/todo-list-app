@@ -23,16 +23,21 @@ export default function ProtectedPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const authCookie = Cookies.get('auth')
       if (authCookie === 'true') {
         setIsAuthenticated(true)
-        const savedTodos = localStorage.getItem('todos')
-        if (savedTodos) {
-          setTodos(JSON.parse(savedTodos).map((todo: any) => ({
-            ...todo,
-            createdAt: new Date(todo.createdAt)
-          })))
+        try {
+          const response = await fetch('/api/todos')
+          if (response.ok) {
+            const todosData = await response.json()
+            setTodos(todosData.map((todo: any) => ({
+              ...todo,
+              createdAt: new Date(todo.createdAt)
+            })))
+          }
+        } catch (error) {
+          console.error('Failed to fetch todos:', error)
         }
       } else {
         router.push('/')
@@ -43,34 +48,73 @@ export default function ProtectedPage() {
     checkAuth()
   }, [router])
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      localStorage.setItem('todos', JSON.stringify(todos))
-    }
-  }, [todos, isAuthenticated])
-
-  const addTodo = () => {
+  const addTodo = async () => {
     if (newTodo.trim()) {
-      const todo: Todo = {
-        id: Date.now().toString(),
-        text: newTodo.trim(),
-        completed: false,
-        createdAt: new Date(),
-        priority: 'medium'
+      try {
+        const response = await fetch('/api/todos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: newTodo.trim(),
+            priority: 'medium'
+          }),
+        })
+        
+        if (response.ok) {
+          const newTodo = await response.json()
+          setTodos([{ ...newTodo, createdAt: new Date(newTodo.createdAt) }, ...todos])
+          setNewTodo('')
+        }
+      } catch (error) {
+        console.error('Failed to create todo:', error)
       }
-      setTodos([todo, ...todos])
-      setNewTodo('')
     }
   }
 
-  const toggleTodo = (id: string) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ))
+  const toggleTodo = async (id: string) => {
+    const todo = todos.find(t => t.id === id)
+    if (todo) {
+      try {
+        const response = await fetch('/api/todos', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id,
+            completed: !todo.completed
+          }),
+        })
+        
+        if (response.ok) {
+          setTodos(todos.map(t => 
+            t.id === id ? { ...t, completed: !t.completed } : t
+          ))
+        }
+      } catch (error) {
+        console.error('Failed to toggle todo:', error)
+      }
+    }
   }
 
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id))
+  const deleteTodo = async (id: string) => {
+    try {
+      const response = await fetch('/api/todos', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      })
+      
+      if (response.ok) {
+        setTodos(todos.filter(todo => todo.id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete todo:', error)
+    }
   }
 
   const startEditing = (id: string, text: string) => {
@@ -78,11 +122,28 @@ export default function ProtectedPage() {
     setEditingText(text)
   }
 
-  const saveEdit = () => {
-    if (editingText.trim()) {
-      setTodos(todos.map(todo => 
-        todo.id === editingId ? { ...todo, text: editingText.trim() } : todo
-      ))
+  const saveEdit = async () => {
+    if (editingText.trim() && editingId) {
+      try {
+        const response = await fetch('/api/todos', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: editingId,
+            text: editingText.trim()
+          }),
+        })
+        
+        if (response.ok) {
+          setTodos(todos.map(todo => 
+            todo.id === editingId ? { ...todo, text: editingText.trim() } : todo
+          ))
+        }
+      } catch (error) {
+        console.error('Failed to update todo:', error)
+      }
     }
     setEditingId(null)
     setEditingText('')
@@ -93,10 +154,27 @@ export default function ProtectedPage() {
     setEditingText('')
   }
 
-  const setPriority = (id: string, priority: 'low' | 'medium' | 'high') => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, priority } : todo
-    ))
+  const setPriority = async (id: string, priority: 'low' | 'medium' | 'high') => {
+    try {
+      const response = await fetch('/api/todos', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          priority
+        }),
+      })
+      
+      if (response.ok) {
+        setTodos(todos.map(todo => 
+          todo.id === id ? { ...todo, priority } : todo
+        ))
+      }
+    } catch (error) {
+      console.error('Failed to update priority:', error)
+    }
   }
 
   const logout = () => {
